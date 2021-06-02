@@ -61,7 +61,7 @@ class _authMobileScreenState extends State<authMobileScreen> {
                 size: 100.0,
               ),
               Text(
-                'Please register Your mobile in the system. ',
+                'Please register your mobile into the system. ',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
