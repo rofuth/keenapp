@@ -84,7 +84,8 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> getUserLogin(String Username, String Password) async {
-    var url = Uri.parse('${URLAPI}Login/\'${Username}\'/\'${Password}\'');
+    var url =
+        Uri.parse('${URLAPI}Login/\'${Username}\'/\'${Password}\'/\'PR\'');
 
     var respon = await http.get(url);
 
@@ -131,8 +132,9 @@ class _SignInScreenState extends State<SignInScreen> {
             .showSnackBar(SnackBar(content: Text('Login Success...')));
         Navigator.of(context).pushReplacementNamed(MAINPAGE);
       } else {
-        Scaffold.of(context).showSnackBar(
-            SnackBar(content: Text('Username Or Passward is wrong...')));
+        Scaffold.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Username,Passward is wrong or Can\'t access into the System...')));
       }
     } else {
       Scaffold.of(context)
