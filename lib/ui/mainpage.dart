@@ -289,135 +289,149 @@ class _mainPageScreenState extends State<mainPageScreen> {
   Widget PRList() {
     return Consumer<PRListProvider>(
         builder: (BuildContext context, PRListProvider provider, Widget child) {
-      return Column(
-        children: [
-          Expanded(
-              child: ListView.builder(
-            itemCount: provider.prList.length,
-            itemBuilder: (BuildContext context, int index) {
-              var _data = provider.prList[index];
-              Color colorstatus = Colors.black;
+      if (provider.prList.length > 0) {
+        return Column(
+          children: [
+            Expanded(
+                child: ListView.builder(
+              itemCount: provider.prList.length,
+              itemBuilder: (BuildContext context, int index) {
+                var _data = provider.prList[index];
+                Color colorstatus = Colors.black;
 
-              if (_data.status == "Draft") {
-                colorstatus = Color.fromRGBO(236, 235, 234, 1);
-              } else if (_data.status == "Request For Approve" ||
-                  _data.status == "Wait For Approve") {
-                colorstatus = Color.fromRGBO(247, 201, 93, 14);
-              } else if (_data.status == "Request For Information" ||
-                  _data.status == "Request For Discuss") {
-                colorstatus = Color.fromRGBO(212, 160, 42, 1);
-              } else if (_data.status == "Reject") {
-                colorstatus = Color.fromRGBO(241, 95, 80, 1);
-              } else if (_data.status == "Approve") {
-                colorstatus = Color.fromRGBO(69, 153, 248, 1);
-              } else if (_data.status == "Request For Verification") {
-                colorstatus = Color.fromRGBO(148, 230, 243, 1);
-              } else if (_data.status == "Account Verified" ||
-                  _data.status == "Purchase Verified" ||
-                  _data.status == "Verified") {
-                colorstatus = Color.fromRGBO(75, 184, 201, 1);
-              } else if (_data.status == "Wait For PO") {
-                colorstatus = Color.fromRGBO(31, 151, 169, 1);
-              } else if (_data.status == "Finish") {
-                colorstatus = Color.fromRGBO(9, 152, 11, 1);
-              } else if (_data.status == "Delete") {
-                colorstatus = Color.fromRGBO(236, 235, 234, 1);
-              }
+                if (_data.status == "Draft") {
+                  colorstatus = Color.fromRGBO(236, 235, 234, 1);
+                } else if (_data.status == "Request For Approve" ||
+                    _data.status == "Wait For Approve") {
+                  colorstatus = Color.fromRGBO(247, 201, 93, 14);
+                } else if (_data.status == "Request For Information" ||
+                    _data.status == "Request For Discuss") {
+                  colorstatus = Color.fromRGBO(212, 160, 42, 1);
+                } else if (_data.status == "Reject") {
+                  colorstatus = Color.fromRGBO(241, 95, 80, 1);
+                } else if (_data.status == "Approve") {
+                  colorstatus = Color.fromRGBO(69, 153, 248, 1);
+                } else if (_data.status == "Request For Verification") {
+                  colorstatus = Color.fromRGBO(148, 230, 243, 1);
+                } else if (_data.status == "Account Verified" ||
+                    _data.status == "Purchase Verified" ||
+                    _data.status == "Verified") {
+                  colorstatus = Color.fromRGBO(75, 184, 201, 1);
+                } else if (_data.status == "Wait For PO") {
+                  colorstatus = Color.fromRGBO(31, 151, 169, 1);
+                } else if (_data.status == "Finish") {
+                  colorstatus = Color.fromRGBO(9, 152, 11, 1);
+                } else if (_data.status == "Delete") {
+                  colorstatus = Color.fromRGBO(236, 235, 234, 1);
+                }
 
-              return Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(2.0),
-                    alignment: Alignment.topCenter,
-                    child: ListTile(
-                      onTap: () {
-                        approved('${_data.prNumber}');
-                      },
-                      title: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextHead(
-                                _data.prNumber, Colors.black, FontWeight.bold),
-                            Text(
-                              _data.status,
-                              style: TextStyle(
-                                backgroundColor: colorstatus,
-                                fontSize: _large ? 20 : (_medium ? 13.5 : 13),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      subtitle: Column(
-                        children: [
-                          Row(
+                return Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(2.0),
+                      alignment: Alignment.topCenter,
+                      child: ListTile(
+                        onTap: () {
+                          approved('${_data.prNumber}');
+                        },
+                        title: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              TextHead(_data.department, Colors.black54,
+                              TextHead(_data.prNumber, Colors.black,
                                   FontWeight.bold),
-                              TextHead(_data.requestBy, Colors.black54,
-                                  FontWeight.bold),
-                              TextHead(_data.subSection, Colors.black54,
-                                  FontWeight.bold),
+                              Text(
+                                _data.status,
+                                style: TextStyle(
+                                  backgroundColor: colorstatus,
+                                  fontSize: _large ? 20 : (_medium ? 13.5 : 13),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(5, 5, 0, 5),
-                            child: Row(
+                        ),
+                        subtitle: Column(
+                          children: [
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                SizedBox(
-                                  width: _width / 100 * 80,
-                                  child: Expanded(
-                                    child: TextHead(_data.detail,
-                                        Colors.black54, FontWeight.bold),
+                                TextHead(_data.department, Colors.black54,
+                                    FontWeight.bold),
+                                TextHead(_data.requestBy, Colors.black54,
+                                    FontWeight.bold),
+                                TextHead(_data.subSection, Colors.black54,
+                                    FontWeight.bold),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(5, 5, 0, 5),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  SizedBox(
+                                    width: _width / 100 * 80,
+                                    child: Expanded(
+                                      child: TextHead(_data.detail,
+                                          Colors.black54, FontWeight.bold),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                TextHead(
+                                    'Request. ${_data.requestDate.toString().substring(0, 10)}',
+                                    Colors.black54,
+                                    FontWeight.bold),
+                                TextHead(
+                                    'Require. ${_data.requireDate.toString().substring(0, 10)}',
+                                    Colors.black54,
+                                    FontWeight.bold),
+                                Text(
+                                  '${NumberFormat("#,###.##").format(double.parse(_data.subTotal.toString())) ?? "0"}',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize:
+                                        _large ? 20 : (_medium ? 13.5 : 13),
+                                    decoration: TextDecoration.underline,
+                                    decorationStyle: TextDecorationStyle.double,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              TextHead(
-                                  'Request. ${_data.requestDate.toString().substring(0, 10)}',
-                                  Colors.black54,
-                                  FontWeight.bold),
-                              TextHead(
-                                  'Require. ${_data.requireDate.toString().substring(0, 10)}',
-                                  Colors.black54,
-                                  FontWeight.bold),
-                              Text(
-                                '${NumberFormat("#,###.##").format(double.parse(_data.subTotal.toString())) ?? "0"}',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: _large ? 20 : (_medium ? 13.5 : 13),
-                                  decoration: TextDecoration.underline,
-                                  decorationStyle: TextDecorationStyle.double,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 8,
-                    child: Container(
-                      color: Colors.grey,
+                    SizedBox(
+                      height: 8,
+                      child: Container(
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
-          )),
-        ],
-      );
+                  ],
+                );
+              },
+            )),
+          ],
+        );
+      } else {
+        return Center(
+            child: Text(
+          "Data is not Found..",
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: _large ? 23 : (_medium ? 20 : 18),
+          ),
+        ));
+      }
     });
   }
 

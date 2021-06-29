@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:keenapp/modal/PRApproveList.dart';
+import 'package:keenapp/modal/mGetapprover.dart';
 import 'package:keenapp/modal/mUser.dart';
 import 'package:keenapp/provider/prList_Provider.dart';
 import 'package:keenapp/provider/user_Provider.dart';
@@ -180,6 +181,33 @@ class _prDetailScreenState extends State<prDetailScreen> {
     } else {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text('Can\'t open Attach File..')));
+    }
+  }
+
+  void showuploadimage(String filename) {
+    if (filename != "") {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: TestHead("Image", Colors.black, FontWeight.bold),
+              content: Container(
+                child: Image.network(
+                    '${URL}UploadFiles/purchaseRequisition/pictureItem/${filename}'),
+              ),
+              actions: [
+                FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: TestHead('Close', Colors.black, FontWeight.bold),
+                ),
+              ],
+            );
+          });
+    } else {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('Image not upload..')));
     }
   }
 
@@ -489,6 +517,8 @@ class _prDetailScreenState extends State<prDetailScreen> {
                 children: [
                   bodydetail,
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
                         width: _width / 100 * 70.0,
@@ -520,37 +550,60 @@ class _prDetailScreenState extends State<prDetailScreen> {
                       ),
                       SizedBox(
                         width: _width / 100 * 21.0,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Column(
                           children: [
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                TestHead('${_detailss.qty}', Colors.grey[600],
-                                    FontWeight.normal),
-                                TestHead(
-                                    '${_detailss.discount.toInt().toString() ?? "0"} %',
-                                    Colors.grey[600],
-                                    FontWeight.normal),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    TestHead('${_detailss.qty}',
+                                        Colors.grey[600], FontWeight.normal),
+                                    TestHead(
+                                        '${_detailss.discount.toInt().toString() ?? "0"} %',
+                                        Colors.grey[600],
+                                        FontWeight.normal),
+                                  ],
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    TestNumber(
+                                        _detailss.unitPrice.toString() ?? "0",
+                                        Colors.grey[600],
+                                        TextDecoration.none),
+                                    TestNumber(
+                                        _detailss.amountDiscount.toString() ??
+                                            "0",
+                                        Colors.grey[600],
+                                        TextDecoration.none),
+                                    TestNumber(
+                                        _detailss.amount.toString() ?? "0",
+                                        Colors.black,
+                                        TextDecoration.underline),
+                                  ],
+                                ),
                               ],
                             ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                TestNumber(
-                                    _detailss.unitPrice.toString() ?? "0",
-                                    Colors.grey[600],
-                                    TextDecoration.none),
-                                TestNumber(
-                                    _detailss.amountDiscount.toString() ?? "0",
-                                    Colors.grey[600],
-                                    TextDecoration.none),
-                                TestNumber(_detailss.amount.toString() ?? "0",
-                                    Colors.black, TextDecoration.underline),
-                              ],
+                            SizedBox(
+                              height: _large ? 25 : (_medium ? 20 : 18),
+                              width: double.infinity,
+                              child: new FlatButton(
+                                padding: new EdgeInsets.fromLTRB(0, 0, 50, 0),
+                                child: Icon(
+                                  Icons.image,
+                                  color: Colors.blue,
+                                  size: _large ? 25 : (_medium ? 20 : 18),
+                                ),
+                                onPressed: () {
+                                  showuploadimage(
+                                      _detailss.uploadPicture.toString());
+                                },
+                              ),
                             ),
                           ],
                         ),
@@ -709,6 +762,7 @@ class _prDetailScreenState extends State<prDetailScreen> {
     _dataPR.details.forEach((element) {
       if (element.types != "T") Currency = element.currency;
     });
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
@@ -786,6 +840,11 @@ class _prDetailScreenState extends State<prDetailScreen> {
   }
 
   Widget btnapprove(PrApproveList _dataPR) {
+    String Currency = "";
+    _dataPR.details.forEach((element) {
+      if (element.types != "T") Currency = element.currency;
+    });
+
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -815,6 +874,9 @@ class _prDetailScreenState extends State<prDetailScreen> {
             width: _width / 100 * 40,
             child: drowdownbtnrequest(
               PRNumber: _dataPR.prNumber,
+              currency: Currency,
+              cordition: _dataPR.subTotal.toString(),
+              date: _dataPR.requestDate.toString(),
               large: _large,
               medium: _medium,
             ),
@@ -847,11 +909,17 @@ class _prDetailScreenState extends State<prDetailScreen> {
 
 class drowdownbtnrequest extends StatefulWidget {
   String PRNumber;
+  String currency;
+  String cordition;
+  String date;
   bool large;
   bool medium;
   drowdownbtnrequest(
       {Key key,
       @required this.PRNumber,
+      @required this.currency,
+      @required this.cordition,
+      @required this.date,
       @required this.large,
       @required this.medium})
       : super(key: key);
@@ -863,20 +931,56 @@ class drowdownbtnrequest extends StatefulWidget {
 class _drowdownbtnrequestState extends State<drowdownbtnrequest> {
   int _value = 1;
 
-  void actionprapprovedAC(String PRNumber, String types) {
+  void actionprapprovedAC(String PRNumber, String types) async {
     // showDialog(
     //     context: context,
     //     builder: (BuildContext context) {
     //       return prapprovedAC();
     //     });
     //print(types);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        fullscreenDialog: true,
-        builder: (context) => prapprovedAC(PRNumber: PRNumber, types: types),
-      ),
-    );
+
+    if (types == "Request For Account Verify" ||
+        types == "Request For Purchase Verify") {
+      var postProvider = Provider.of<UserProvider>(context, listen: false);
+      mUser user = postProvider.getUser();
+
+      if (user.empEmail != null) {
+        var prListtProvider =
+            Provider.of<PRListProvider>(context, listen: false);
+
+        List<MGetapprover> getapprover = await prListtProvider.getapprover(
+            user.empDepartment,
+            widget.cordition,
+            widget.currency,
+            user.empEmail,
+            widget.date);
+
+        if (getapprover.length > 0) {
+          MGetapprover _data = getapprover[0];
+          if (_data.levels == "1") {
+            Scaffold.of(context).showSnackBar(
+                SnackBar(content: Text('Can\'t access this Menu..')));
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                fullscreenDialog: true,
+                builder: (context) =>
+                    prapprovedAC(PRNumber: PRNumber, types: types),
+              ),
+            );
+          }
+        }
+      }
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          fullscreenDialog: true,
+          builder: (context) => prapprovedAC(PRNumber: PRNumber, types: types),
+        ),
+      );
+    }
   }
 
   @override
@@ -937,7 +1041,8 @@ class _drowdownbtnrequestState extends State<drowdownbtnrequest> {
               setState(() {
                 _value = value;
                 if (value == 1) {
-                  actionprapprovedAC(widget.PRNumber, 'Request For Infomation');
+                  actionprapprovedAC(
+                      widget.PRNumber, 'Request For Information');
                 } else if (value == 2) {
                   actionprapprovedAC(widget.PRNumber, 'Request For Discuss');
                 } else if (value == 3) {

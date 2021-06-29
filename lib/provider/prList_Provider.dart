@@ -1,9 +1,11 @@
 import 'dart:convert';
+
 import 'package:keenapp/constants/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:keenapp/modal/PRApproveList.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:keenapp/modal/mGetapprover.dart';
 import 'package:keenapp/modal/mSelectBox.dart';
 
 class PRListProvider with ChangeNotifier {
@@ -59,6 +61,29 @@ class PRListProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  getapprover(String department, String condition, String currency,
+      String email, String date) async {
+    List<MGetapprover> _Getapprover;
+    MGetapprover _dataGetapprover;
+
+    var url = Uri.parse('${URLAPI}PR/getapprover?department=' +
+        department +
+        '&condition=' +
+        condition +
+        '&currency=' +
+        currency +
+        '&email=' +
+        email +
+        '&date=' +
+        date);
+
+    var respon = await http.get(url);
+
+    _Getapprover = mGetapproverFromJson(respon.body);
+
+    return _Getapprover;
+  }
+
   approve(String Email, String Users, String PRNumber, String Comment,
       String status) async {
     String _status;
@@ -87,8 +112,7 @@ class PRListProvider with ChangeNotifier {
 
     await getAll(Email, '', '', '', '', '');
     if (respon.body.toString() == '"Wait For PO"') {
-      await generatePDF(PRNumber, 'mobile');
-      await convertPRPO(PRNumber, 'mobile', Users);
+      generatePDF(PRNumber, 'mobile', Users);
     }
 
     print(respon.body);
@@ -131,10 +155,11 @@ class PRListProvider with ChangeNotifier {
       },
     );
     check = respon.body.toString();
+
     return check;
   }
 
-  generatePDF(String PRNumber, String name) async {
+  generatePDF(String PRNumber, String name, String Users) async {
     String check = 'False';
 
     var url = Uri.parse(
@@ -147,6 +172,8 @@ class PRListProvider with ChangeNotifier {
       },
     );
     check = respon.body.toString();
+
+    if (check == '"OK"') convertPRPO(PRNumber, 'mobile', Users);
 
     return check;
   }

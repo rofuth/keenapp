@@ -84,7 +84,12 @@ class _prapprovedACScreenState extends State<prapprovedACScreen> {
 
   void evenApprovedNF() async {
     setState(() {
-      indicator = LinearProgressIndicator();
+      //indicator = LinearProgressIndicator();
+
+      indicator = CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+        strokeWidth: 4,
+      );
     });
     if (formKey.currentState.validate()) {
       String Comment1 = commentController.text;
@@ -104,33 +109,29 @@ class _prapprovedACScreenState extends State<prapprovedACScreen> {
             widget.PRNumber, Comment1, widget.types);
       }
       print(_status);
-      if (_status == "Approved" ||
+
+      if (_status == '"Approved"' ||
           _status == '"Wait For PO"' ||
           _status == '"OK"' ||
           _status == '"Request For Verification"') {
         String statusemail = "approve";
+
         if (_status == '"OK"') {
           statusemail = "notApprovePR";
         }
-        String emailNF = await prProvider.sendmailNF(
-            widget.PRNumber, statusemail, user.empEmail);
-        if (emailNF == '"OK"') {
-          Scaffold.of(context)
-              .showSnackBar(SnackBar(content: Text('Send mail Complete..')));
-        } else {
-          Scaffold.of(context)
-              .showSnackBar(SnackBar(content: Text('Can\'t Send mail')));
-        }
+
+        var chkmail =
+            prProvider.sendmailNF(widget.PRNumber, statusemail, user.empEmail);
+        print(chkmail);
       }
 
       if (_status == '"Approved"' ||
           _status == '"Wait For PO"' ||
           _status == '"OK"' ||
           _status == '"Request For Verification"') {
-        print(_status);
         showstatusApprove();
         Timer(
-            Duration(seconds: 3),
+            Duration(seconds: 2),
             () => {
                   Navigator.of(context).pushReplacementNamed(MAINPAGE),
                 });
