@@ -62,14 +62,17 @@ class _mainPageScreenState extends State<mainPageScreen> {
     return;
   }
 
-  Future<void> getPrApproveList() async {
+  Future<void> getPrApproveList(String types) async {
     var postProvider = Provider.of<UserProvider>(context, listen: false);
     mUser user = postProvider.getUser();
 
     if (user.empEmail != null) {
       var prListtProvider = Provider.of<PRListProvider>(context, listen: false);
       prListtProvider.getAll(user.empEmail, '', '', '', '', '');
-      Navigator.pop(context);
+
+      if (types == "MENU") {
+        Navigator.pop(context);
+      }
     }
 
     return;
@@ -130,6 +133,17 @@ class _mainPageScreenState extends State<mainPageScreen> {
       appBar: AppBar(
         title: Text('PR Approve'),
         actions: <Widget>[
+          Padding(
+              padding: EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  getPrApproveList('');
+                },
+                child: Icon(
+                  Icons.refresh,
+                  size: 26.0,
+                ),
+              )),
           Padding(
               padding: EdgeInsets.only(right: 20.0),
               child: GestureDetector(
@@ -234,7 +248,9 @@ class _mainPageScreenState extends State<mainPageScreen> {
                             fontSize: _large ? 25 : (_medium ? 20.5 : 20),
                           ),
                         ),
-                        onTap: getPrApproveList,
+                        onTap: () {
+                          getPrApproveList('MENU');
+                        },
                       ),
                     ],
                   ),
