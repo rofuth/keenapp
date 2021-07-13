@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -39,6 +40,8 @@ class _mainPageScreenState extends State<mainPageScreen> {
   bool _medium;
   String PRNumber;
 
+  var indicator = null;
+
   List<PrApproveList> _dataFromAPI;
   // PostDB _postDB = PostDB('user');
   PostDBSqflite _postDB = PostDBSqflite(databaseName: 'user');
@@ -63,6 +66,9 @@ class _mainPageScreenState extends State<mainPageScreen> {
   }
 
   Future<void> getPrApproveList(String types) async {
+    setState(() {
+      indicator = LinearProgressIndicator();
+    });
     var postProvider = Provider.of<UserProvider>(context, listen: false);
     mUser user = postProvider.getUser();
 
@@ -74,6 +80,14 @@ class _mainPageScreenState extends State<mainPageScreen> {
         Navigator.pop(context);
       }
     }
+
+    Timer(
+        Duration(seconds: 1),
+        () => {
+              setState(() {
+                indicator = null;
+              }),
+            });
 
     return;
   }
@@ -308,6 +322,7 @@ class _mainPageScreenState extends State<mainPageScreen> {
       if (provider.prList.length > 0) {
         return Column(
           children: [
+            indicator ?? Container(),
             Expanded(
                 child: ListView.builder(
               itemCount: provider.prList.length,

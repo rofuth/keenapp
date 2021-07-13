@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:keenapp/modal/PRApproveList.dart';
 import 'package:keenapp/modal/mGetapprover.dart';
+import 'package:keenapp/modal/mLogPrNumber.dart';
 import 'package:keenapp/modal/mUser.dart';
 import 'package:keenapp/provider/prList_Provider.dart';
 import 'package:keenapp/provider/user_Provider.dart';
@@ -47,12 +48,14 @@ class _prDetailScreenState extends State<prDetailScreen> {
 
   double iconSize = 40;
   List<PrApproveList> _ListPRApproved;
+  List<MLogPrNumber> _datalogPR = [];
   var indicator = null;
 
   @override
   void initState() {
     super.initState();
     getdata();
+    getlog();
   }
 
   Future<void> _openPDF(String types, String filename) async {
@@ -109,6 +112,7 @@ class _prDetailScreenState extends State<prDetailScreen> {
 
     if (user.empEmail != null) {
       var prListtProvider = Provider.of<PRListProvider>(context, listen: false);
+
       prListtProvider.getAll(user.empEmail, '', widget.PRNumber, '', '', '');
 
       //Navigator.pop(context);
@@ -120,6 +124,14 @@ class _prDetailScreenState extends State<prDetailScreen> {
     // _ListPRApproved = prListtProvider.getPRNumber(widget.PRNumber);
 
     // setState(() {});
+  }
+
+  void getlog() async {
+    var prListtProvider = Provider.of<PRListProvider>(context, listen: false);
+    List<MLogPrNumber> _logPR = await prListtProvider.getlog(widget.PRNumber);
+    _datalogPR = _logPR;
+    setState(() {});
+    print(_logPR);
   }
 
   void getalllist() async {
@@ -245,8 +257,10 @@ class _prDetailScreenState extends State<prDetailScreen> {
                             _detail = _dataPR.details;
 
                             return Container(
-                              height: _height,
                               width: _width,
+                              constraints: BoxConstraints(
+                                maxHeight: double.infinity,
+                              ),
                               child: SingleChildScrollView(
                                 child: Column(
                                   children: <Widget>[
@@ -259,6 +273,10 @@ class _prDetailScreenState extends State<prDetailScreen> {
                                     ),
                                     subtotal(_dataPR),
                                     btnapprove(_dataPR),
+                                    transection(_datalogPR, context),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
                                   ],
                                 ),
                               ),
@@ -328,6 +346,17 @@ class _prDetailScreenState extends State<prDetailScreen> {
                     Padding(
                       padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                       child: TestHead('${_dataPR.prNumber}', Colors.black54,
+                          FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TestHead('Area :', Colors.black, FontWeight.bold),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                      child: TestHead('${_dataPR.BranchPR}', Colors.black54,
                           FontWeight.bold),
                     ),
                   ],
@@ -526,23 +555,31 @@ class _prDetailScreenState extends State<prDetailScreen> {
                           children: [
                             SizedBox(
                               width: _width,
-                              child: TestHead(_detailss.productName,
-                                  Colors.black, FontWeight.bold),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
-                              child: SizedBox(
-                                width: _width,
-                                child: TestHead(_detailss.glNo, Colors.black,
+                              child: Expanded(
+                                child: TestHead(
+                                    _detailss.productCode +
+                                        ' : ' +
+                                        _detailss.productName,
+                                    Colors.black,
                                     FontWeight.bold),
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.fromLTRB(8, 0, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
                               child: SizedBox(
                                 width: _width,
-                                child: TestHead(_detailss.glDesc,
-                                    Colors.grey[600], FontWeight.normal),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TestHead(_detailss.glNo + " : ",
+                                        Colors.black, FontWeight.bold),
+                                    Expanded(
+                                      child: TestHead(_detailss.glDesc,
+                                          Colors.grey[600], FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],
@@ -589,20 +626,22 @@ class _prDetailScreenState extends State<prDetailScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(
-                              height: _large ? 25 : (_medium ? 20 : 18),
-                              width: double.infinity,
-                              child: new FlatButton(
-                                padding: new EdgeInsets.fromLTRB(0, 0, 50, 0),
-                                child: Icon(
-                                  Icons.image,
-                                  color: Colors.blue,
-                                  size: _large ? 25 : (_medium ? 20 : 18),
+                            Container(
+                              child: SizedBox(
+                                height: _large ? 25 : (_medium ? 20 : 18),
+                                width: double.infinity,
+                                child: new FlatButton(
+                                  padding: new EdgeInsets.fromLTRB(0, 0, 50, 0),
+                                  child: Icon(
+                                    Icons.image,
+                                    color: Colors.blue,
+                                    size: _large ? 25 : (_medium ? 20 : 18),
+                                  ),
+                                  onPressed: () {
+                                    showuploadimage(
+                                        _detailss.uploadPicture.toString());
+                                  },
                                 ),
-                                onPressed: () {
-                                  showuploadimage(
-                                      _detailss.uploadPicture.toString());
-                                },
                               ),
                             ),
                           ],
@@ -822,6 +861,87 @@ class _prDetailScreenState extends State<prDetailScreen> {
         ],
       ),
     );
+  }
+
+  Widget transection(List<MLogPrNumber> _datalog, BuildContext context) {
+    _height = MediaQuery.of(context).size.height;
+    _width = MediaQuery.of(context).size.width;
+    _pixelRatio = MediaQuery.of(context).devicePixelRatio;
+    _large = ResponsiveWidget.isScreenLarge(_width, _pixelRatio);
+    _medium = ResponsiveWidget.isScreenMedium(_width, _pixelRatio);
+
+    if (_datalog.length > 0) {
+      return Container(
+        height: 250,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.grey[100],
+          border: Border.all(
+            color: Colors.grey,
+            width: 2,
+          ),
+        ),
+        child: Column(
+          children: [
+            TestHead('Transection', Colors.black, FontWeight.bold),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: SizedBox(
+                width: _width / 100 * 95,
+                height: 250 / 100 * 80,
+                child: Expanded(
+                  child: ListView.builder(
+                    itemCount: _datalog.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      MLogPrNumber _log = _datalog[index];
+                      return Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TestHead(
+                                  _log.users, Colors.black, FontWeight.normal),
+                              TestHead(
+                                  _log.status, Colors.black, FontWeight.normal),
+                              TestHead(
+                                  _log.date, Colors.black, FontWeight.normal),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                TestHead('Comment : ', Colors.grey,
+                                    FontWeight.normal),
+                                Expanded(
+                                  child: TestHead(_log.comment, Colors.black,
+                                      FontWeight.normal),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 2,
+                            width: _width,
+                            child: Container(
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container();
+    }
   }
 
   void actionprapprovedAC(String PRNumber, String types) {

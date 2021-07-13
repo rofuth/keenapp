@@ -6,6 +6,8 @@ import 'package:keenapp/modal/PRApproveList.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:keenapp/modal/mGetapprover.dart';
+import 'package:keenapp/modal/mLogPrNumber.dart';
+
 import 'package:keenapp/modal/mSelectBox.dart';
 
 class PRListProvider with ChangeNotifier {
@@ -59,6 +61,17 @@ class PRListProvider with ChangeNotifier {
     });
 
     notifyListeners();
+  }
+
+  getlog(String PRNumber) async {
+    List<MLogPrNumber> _datalog;
+    var url = Uri.parse('${URLAPI}PR/PRLog?PRNumber=' + PRNumber);
+
+    var respon = await http.get(url);
+
+    _datalog = mLogPrNumberFromJson(respon.body);
+
+    return _datalog;
   }
 
   getapprover(String department, String condition, String currency,
@@ -173,7 +186,9 @@ class PRListProvider with ChangeNotifier {
     );
     check = respon.body.toString();
 
-    if (check == '"OK"') convertPRPO(PRNumber, 'mobile', Users);
+    if (check == '"OK"') {
+      convertPRPO(PRNumber, 'mobile', Users);
+    }
 
     return check;
   }
@@ -192,6 +207,9 @@ class PRListProvider with ChangeNotifier {
     );
     check = respon.statusCode.toString();
 
+    if (check == '"True"') {
+      sendmailNF(PRNumber, 'convertPRTOPO', 'nick.ginns@rofuhk.com');
+    }
     return check;
   }
 

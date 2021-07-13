@@ -37,6 +37,7 @@ class PrApproveList {
     this.updateBy,
     this.updateDate,
     this.subSection,
+    this.BranchPR,
     this.statusLog,
     this.levelsLog,
     this.actionLog,
@@ -68,6 +69,7 @@ class PrApproveList {
   String updateBy;
   String updateDate;
   String subSection;
+  String BranchPR;
   String statusLog;
   String levelsLog;
   String actionLog;
@@ -111,6 +113,7 @@ class PrApproveList {
         updateBy: json["updateBy"] == null ? null : json["updateBy"],
         updateDate: json["updateDate"] == null ? null : json["updateDate"],
         subSection: json["sub_section"] == null ? null : json["sub_section"],
+        BranchPR: json["BranchPR"] == null ? null : json["BranchPR"],
         statusLog: json["statusLog"] == null ? null : json["statusLog"],
         levelsLog: json["levelsLog"] == null ? null : json["levelsLog"],
         actionLog: json["actionLog"] == null ? null : json["actionLog"],
@@ -152,6 +155,7 @@ class PrApproveList {
         "updateBy": updateBy == null ? null : updateBy,
         "updateDate": updateDate == null ? null : updateDate,
         "sub_section": subSection == null ? null : subSection,
+        "BranchPR": BranchPR == null ? null : BranchPR,
         "statusLog": statusLog == null ? null : statusLog,
         "levelsLog": levelsLog == null ? null : levelsLog,
         "actionLog": actionLog == null ? null : actionLog,
