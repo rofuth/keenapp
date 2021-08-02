@@ -207,7 +207,7 @@ class PRListProvider with ChangeNotifier {
     );
     check = respon.statusCode.toString();
 
-    if (check == '"True"') {
+    if (check == '200') {
       sendmailNF(PRNumber, 'convertPRTOPO', 'nick.ginns@rofuhk.com');
     }
     return check;
